@@ -1,4 +1,4 @@
-# SI 201 HW4 (Library Checkout System)
+# SI 201 Project 2 
 # Your name:
 # Your student id:
 # Your email:
@@ -38,13 +38,28 @@ def load_listing_results(html_path) -> list[tuple]:
         list[tuple]: A list of tuples containing (listing_title, listing_id)
     """
     # TODO: Implement checkout logic following the instructions
-    # ==============================
-    # YOUR CODE STARTS HERE
-    # ==============================
-    pass
-    # ==============================
-    # YOUR CODE ENDS HERE
-    # ==============================
+    listings = []
+
+    with open(html_path, 'r', encoding='utf-8') as f:
+        soup = BeautifulSoup(f, 'html.parser')
+        
+        tags = soup.find_all('a', class_='l1j9v1wn bn2bl2p dir dir-ltr')
+        
+        for tag in tags:
+            
+            href = tag.get('href', '')
+            listing_id = href.split('/rooms/')[1].split('?')[0]
+            
+            title_id = tag.get('aria-labelledby', '')
+            title_tag = soup.find(id=title_id)
+            title = title_tag.text.strip() if title_tag else ''
+            
+            listings.append((title, listing_id))
+    
+    return listings
+
+
+
 
 
 def get_listing_details(listing_id) -> dict:
@@ -195,7 +210,8 @@ class TestCases(unittest.TestCase):
     def test_load_listing_results(self):
         # TODO: Check that the number of listings extracted is 18.
         # TODO: Check that the FIRST (title, id) tuple is  ("Loft in Mission District", "1944564").
-        pass
+        self.assertEqual(len(self.listings), 18)
+        self.assertEqual(self.listings[0], ("Loft in Mission District", "1944564"))
 
     def test_get_listing_details(self):
         html_list = ["467507", "1550913", "1944564", "4614763", "6092596"]

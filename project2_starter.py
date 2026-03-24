@@ -94,7 +94,7 @@ def get_listing_details(listing_id) -> dict:
         if policy_tag:
             policy_number = policy_tag.find('span', class_='ll4r2nl dir dir-ltr').text.strip()
         else:
-            policy_number = 'Exempt'
+            policy_number = 'exempt'
 
         # host_type
         host_type_spans = [span.text for span in soup.find_all('span', class_='l1dfad8f dir dir-ltr')]
@@ -244,7 +244,7 @@ def validate_policy_numbers(data) -> list[str]:
     reports = []
     for item in data:
         policy = item[2]
-        if policy in ('pending', 'exempt'):
+        if policy.lower() in ('pending', 'exempt'):
             continue
         x = re.search(validPattern1, policy)
         y = re.search(validPattern2, policy)
@@ -323,7 +323,7 @@ class TestCases(unittest.TestCase):
         # TODO: Read the CSV back in and store rows in a list.
         # TODO: Check that the first data row matches ["Guesthouse in San Francisco", "49591060", "STR-0000253", "Superhost", "Ingrid", "Entire Room", "5.0"].
         output_csv(self.detailed_data, 'test.csv')
-        with open('test.csv', 'r', encoding='utf-8') as f:
+        with open(out_path, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
             next(reader)
             rows = list(reader)

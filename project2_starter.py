@@ -104,7 +104,7 @@ def get_listing_details(listing_id) -> dict:
                 host_type = 'Superhost'
                 break
 
-        # host_name and room_type
+        
         host_name = ''
         room_type = 'Entire Room'
         for tag in soup.find_all('h2', class_='_14i3z6h'):
@@ -120,7 +120,7 @@ def get_listing_details(listing_id) -> dict:
                     room_type = 'Entire Room'
                 break
 
-        # location_rating
+        
         location_rating = 0.0
         rating_divs = soup.find_all('div', class_='_a3qxec')
         for div in rating_divs:
@@ -181,14 +181,13 @@ def output_csv(data, filename) -> None:
     Returns:
         None
     """
-    # TODO: Implement checkout logic following the instructions
-    # ==============================
-    # YOUR CODE STARTS HERE
-    # ==============================
-    pass
-    # ==============================
-    # YOUR CODE ENDS HERE
-    # ==============================
+    
+    data.sort(key=lambda x: x[6], reverse=True) 
+    with open(filename, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Listing Title', 'Listing ID', 'Policy Number', 'Host Type', 'Host Name', 'Room Type', 'Location Rating',]) 
+        for row in data:
+            writer.writerow(row)  
 
 
 def avg_location_rating_by_room_type(data) -> dict:
@@ -303,7 +302,12 @@ class TestCases(unittest.TestCase):
         # TODO: Call output_csv() to write the detailed_data to a CSV file.
         # TODO: Read the CSV back in and store rows in a list.
         # TODO: Check that the first data row matches ["Guesthouse in San Francisco", "49591060", "STR-0000253", "Superhost", "Ingrid", "Entire Room", "5.0"].
-
+        output_csv(self.detailed_data, 'test.csv')
+        with open('test.csv', 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            next(reader)
+            rows = list(reader)
+            self.assertEqual(rows[0], ["Guesthouse in San Francisco", "49591060", "STR-0000253", "Superhost", "Ingrid", "Entire Room", "5.0"])
         os.remove(out_path)
 
     def test_avg_location_rating_by_room_type(self):

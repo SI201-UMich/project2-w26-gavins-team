@@ -1,14 +1,14 @@
 # SI 201 Project 2 
-# Your name:
-# Your student id:
-# Your email:
+# Your name: Gavin Wald
+# Your student id: 39562065
+# Your email: gwald@umich.edu
 # Who or what you worked with on this homework (including generative AI like ChatGPT):
 # If you worked with generative AI also add a statement for how you used it.
-# e.g.:
+# e.g.: 
 # Asked ChatGPT for hints on debugging and for suggestions on overall code structure
-#
+# I used Claude to debug my code, I had a lot of issues with my filepath. I also used it to help write the csv
 # Did your use of GenAI on this assignment align with your goals and guidelines in your Gen AI contract? If not, why?
-#
+# Yes, I used it primarily for debugging but they were issues outside of my code
 # --- ARGUMENTS & EXPECTED RETURN VALUES PROVIDED --- #
 # --- SEE INSTRUCTIONS FOR FULL DETAILS ON METHOD IMPLEMENTATION --- #
 
@@ -238,14 +238,20 @@ def validate_policy_numbers(data) -> list[str]:
     Returns:
         list[str]: A list of listing_id values whose policy numbers do NOT match the valid format
     """
-    # TODO: Implement checkout logic following the instructions
-    # ==============================
-    # YOUR CODE STARTS HERE
-    # ==============================
-    pass
-    # ==============================
-    # YOUR CODE ENDS HERE
-    # ==============================
+    validPattern1 = r'STR-000[0-9]{4}'
+    validPattern2 = r'20[0-9]{2}-00[0-9]{4}STR'
+
+    reports = []
+    for item in data:
+        policy = item[2]
+        if policy in ('pending', 'exempt'):
+            continue
+        x = re.search(validPattern1, policy)
+        y = re.search(validPattern2, policy)
+        if not x and not y:
+            reports.append(item[1])
+
+    return reports
 
 
 # EXTRA CREDIT
@@ -333,7 +339,8 @@ class TestCases(unittest.TestCase):
     def test_validate_policy_numbers(self):
         # TODO: Call validate_policy_numbers() on detailed_data and save the result into a variable invalid_listings.
         # TODO: Check that the list contains exactly "16204265" for this dataset.
-        pass
+        invalid_listings = validate_policy_numbers(self.detailed_data)
+        self.assertEqual(invalid_listings[0], '16204265')
 
 
 def main():

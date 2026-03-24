@@ -82,13 +82,35 @@ def get_listing_details(listing_id) -> dict:
         }
     """
     # TODO: Implement checkout logic following the instructions
-    # ==============================
-    # YOUR CODE STARTS HERE
-    # ==============================
-    pass
-    # ==============================
-    # YOUR CODE ENDS HERE
-    # ==============================
+
+    with open(f"/Users/gavinwald/Desktop/Desktop - Gavin’s MacBook Pro/SI 201/project2-w26-gavins-team/html_files/listing_{listing_id}.html", encoding='utf-8') as f:
+        soup = BeautifulSoup(f.read(), 'html.parser')
+        outer = {}
+
+        
+        policy_number = soup.find('li', class_='f19phm7j dir dir-ltr').find('span', class_='ll4r2nl dir dir-ltr')
+        
+        host_type = [span.text for span in soup.find_all('span', class_='l1dfad8f dir dir-ltr')]
+        
+
+        h2 = soup.find('h2', class_='_14i3z6h')
+        text = h2.text
+
+        room_type = text.split('hosted by')[0].strip() 
+        host_name = text.split('hosted by')[1].strip()   
+    
+        location_rating = soup.find('span', class_='_17p6nbba')
+
+        outer[listing_id] = {'policy_number' : policy_number.text,
+                         'host_type' : host_type[2],
+                         'host_name' : host_name,
+                         'room_type' : room_type,
+                         'location_rating' : float(re.search(r"\d+(\.\d+)?", location_rating.text).group())
+                            }
+    
+    return outer
+
+
 
 
 def create_listing_database(html_path) -> list[tuple]:
@@ -217,12 +239,16 @@ class TestCases(unittest.TestCase):
         html_list = ["467507", "1550913", "1944564", "4614763", "6092596"]
 
         # TODO: Call get_listing_details() on each listing id above and save results in a list.
-
+        results = [get_listing_details(x) for x in html_list]
         # TODO: Spot-check a few known values by opening the corresponding listing_<id>.html files.
         # 1) Check that listing 467507 has the correct policy number "STR-0005349".
-        # 2) Check that listing 1944564 has the correct host type "Superhost" and room type "Entire Room".
-        # 3) Check that listing 1944564 has the correct location rating 4.9.
-        pass
+        # 2) Check that listing 1944564 has the correct host type "Superhost" and room type "Entire loft".
+        # 3) Check that listing 1944564 has the correct location rating 4.98.
+        self.assertEqual(results[0][html_list[0]]['policy_number'], 'STR-0005349')
+        self.assertEqual(results[2][html_list[2]]['host_type'], 'Superhost')
+        self.assertEqual(results[2][html_list[2]]['room_type'], 'Entire loft')
+        self.assertEqual(results[2][html_list[2]]['location_rating'], 4.98)
+
 
     def test_create_listing_database(self):
         # TODO: Check that each tuple in detailed_data has exactly 7 elements:
